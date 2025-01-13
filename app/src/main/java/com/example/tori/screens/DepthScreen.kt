@@ -1,34 +1,43 @@
 package com.example.tori.screens
 
+import android.content.Context
+import android.view.SurfaceView
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.input.pointer.pointerInput
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
-import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.compose.ui.viewinterop.AndroidView
 import com.example.tori.viewmodel.ARViewModel
 
 @Composable
 fun DepthScreen(
-    viewModel: ARViewModel = viewModel()
+    viewModel: ARViewModel
 ) {
-    val depthData by viewModel.depthData.collectAsState()
+    val context = LocalContext.current
 
-    Box(
-        modifier = Modifier
-            .fillMaxSize()
-            .pointerInput(Unit) {
-                detectTapGestures { offset ->
-                    // 화면 클릭 시 Depth 데이터 요청
-                    viewModel.getDepthData(offset.x.toInt(), offset.y.toInt())
-                }
-            }
-    ) {
+    // 카메라 프리뷰를 위한 SurfaceView
+    Box(modifier = Modifier.fillMaxSize()) {
+        CameraPreview(context, viewModel)
+
+        // Depth 데이터 표시
         Text(
-            text = depthData?.let { "X: ${it.first}, Depth: ${it.second}" } ?: "화면을 터치하세요",
+            text = "화면을 터치하세요",
+            style = MaterialTheme.typography.headlineSmall,
             modifier = Modifier.padding(16.dp)
         )
     }
+}
+
+@Composable
+fun CameraPreview(context: Context, viewModel: ARViewModel) {
+    AndroidView(
+        factory = {
+            SurfaceView(context).apply {
+                viewModel.initializeSession(this) // ARCore 세션 초기화 및 연결
+            }
+        },
+        modifier = Modifier.fillMaxSize()
+    )
 }
