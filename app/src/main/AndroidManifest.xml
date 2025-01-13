@@ -2,15 +2,17 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools">
 
-
+    <!-- 카메라 권한 -->
     <uses-permission android:name="android.permission.CAMERA" />
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
 
+    <!-- ARCore를 위한 카메라 기능 -->
     <uses-feature android:name="android.hardware.camera.ar" android:required="true" />
 
+    <!-- 선택적으로 일반 카메라 사용 -->
     <uses-feature
         android:name="android.hardware.camera"
         android:required="false" />
-
 
     <application
         android:allowBackup="true"
@@ -22,6 +24,13 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.TORI"
         tools:targetApi="31">
+
+        <!-- ARCore 사용 설정 -->
+        <meta-data
+            android:name="com.google.ar.core"
+            android:value="required" />
+
+        <!-- 메인 액티비티 -->
         <activity
             android:name=".MainActivity"
             android:exported="true"
@@ -29,10 +38,8 @@
             android:theme="@style/Theme.TORI">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
-
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
     </application>
-
 </manifest>

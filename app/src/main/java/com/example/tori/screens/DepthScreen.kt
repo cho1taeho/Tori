@@ -1,41 +1,34 @@
 package com.example.tori.screens
 
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.tori.viewmodel.ARViewModel
-import kotlinx.coroutines.flow.collect
-import kotlinx.coroutines.flow.onEach
 
 @Composable
-fun DepthScreen(viewModel: ARViewModel = viewModel()) {
-    // StateFlow 관찰
-    val depthData by viewModel.depthData.collectAsState(initial = emptyList())
+fun DepthScreen(
+    viewModel: ARViewModel = viewModel()
+) {
+    val depthData by viewModel.depthData.collectAsState()
 
-    // Depth 데이터 가져오기
-    LaunchedEffect(Unit) {
-        viewModel.initializeSession()
-        viewModel.fetchDepthData()
-    }
-
-    // UI 출력
-    Column(
+    Box(
         modifier = Modifier
             .fillMaxSize()
-            .padding(16.dp)
-    ) {
-        Text(text = "Depth Data", style = MaterialTheme.typography.headlineSmall)
-        Spacer(modifier = Modifier.height(8.dp))
-
-        LazyColumn {
-            items(depthData.size) { index ->
-                Text(text = "Depth: ${depthData[index]} meters")
-                Divider()
+            .pointerInput(Unit) {
+                detectTapGestures { offset ->
+                    // 화면 클릭 시 Depth 데이터 요청
+                    viewModel.getDepthData(offset.x.toInt(), offset.y.toInt())
+                }
             }
-        }
+    ) {
+        Text(
+            text = depthData?.let { "X: ${it.first}, Depth: ${it.second}" } ?: "화면을 터치하세요",
+            modifier = Modifier.padding(16.dp)
+        )
     }
 }
