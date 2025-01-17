@@ -1,39 +1,35 @@
 package com.example.tori
 
-import android.Manifest
 import android.os.Bundle
+import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
-import androidx.activity.result.contract.ActivityResultContracts
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.tori.screens.DepthScreen
 import com.example.tori.ui.theme.TORITheme
 import com.example.tori.viewmodel.ARViewModel
+import com.google.ar.core.ArCoreApk
 
 class MainActivity : ComponentActivity() {
-
-    // 권한 요청 런처
-    private val cameraPermissionLauncher =
-        registerForActivityResult(ActivityResultContracts.RequestPermission()) { isGranted ->
-            if (isGranted) {
-                android.util.Log.d("MainActivity", "카메라 권한이 허용되었습니다.")
-            } else {
-                android.util.Log.e("MainActivity", "카메라 권한이 거부되었습니다.")
-            }
-        }
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        // 카메라 권한 요청
-        cameraPermissionLauncher.launch(Manifest.permission.CAMERA)
-
-        // Compose UI 설정
         setContent {
             TORITheme {
                 val viewModel: ARViewModel = viewModel()
                 DepthScreen(viewModel = viewModel)
             }
+        }
+
+        try {
+            val availability = ArCoreApk.getInstance().checkAvailability(this)
+            if (availability.isSupported) {
+                Log.d("MainActivity", "ARCore가 지원됩니다.")
+            } else {
+                Log.e("MainActivity", "ARCore가 지원되지 않습니다.")
+            }
+        } catch (e: Exception) {
+            Log.e("MainActivity", "ARCore 지원 확인 중 오류 발생: ${e.message}")
         }
     }
 }

@@ -59,7 +59,11 @@ class ARViewModel(application: Application) : AndroidViewModel(application) {
     fun updateFrame() {
         try {
             val frame = arSession?.update()
-            Log.d("ARViewModel", "AR 세션 프레임 업데이트 성공.")
+            if (frame != null) {
+                Log.d("ARViewModel", "AR 세션 프레임 업데이트 성공.")
+            } else {
+                Log.e("ARViewModel", "AR 세션에서 프레임 데이터를 가져오지 못했습니다.")
+            }
         } catch (e: Exception) {
             Log.e("ARViewModel", "AR 세션 프레임 업데이트 실패: ${e.message}")
         }
