@@ -6,7 +6,6 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.viewinterop.AndroidView
 import com.example.tori.viewmodel.ARViewModel
 
 @Composable
@@ -20,7 +19,7 @@ fun DepthScreen(viewModel: ARViewModel) {
 
 @Composable
 fun CameraPreview(context: Context, viewModel: ARViewModel) {
-    AndroidView(
+    androidx.compose.ui.viewinterop.AndroidView(
         factory = {
             SurfaceView(context).apply {
                 viewModel.initializeSession(this)
